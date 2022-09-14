@@ -1,0 +1,107 @@
+       IDENTIFICATION DIVISION.
+      *------------------------
+       PROGRAM-ID. ALGO3.
+       AUTHOR.  HICHAM.
+      *-----------------------
+       ENVIRONMENT DIVISION.
+      *----------------------
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER. IBM-370.
+       OBJECT-COMPUTER. IBM-370.
+       SPECIAL-NAMES.
+               DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT FCLIENT1 ASSIGN FCLIENT1
+                  FILE STATUS CR-CLIENT1.
+           SELECT FCLIENT2 ASSIGN CLIENT2
+                  FILE STATUS CR-CLIENT2.
+           SELECT FCLIENT  ASSIGN FCLIENT
+                  FILE STATUS CR-CLIENT.
+      *--------------------------------------
+       DATA DIVISION.
+      *--------------------------------------
+       FILE SECTION.
+       FD  FCLIENT1
+           BLOCK CONTAINS 0
+           RECORDING MODE F
+           DATA RECORD FCLIENT1.
+       01  CLIENT1.
+          02 NUMERO1       PIC 9(6).
+          02               PIC X(44).
+      *---------------------------------------------
+       FD  FCLIENT2
+           BLOCK CONTAINS 0
+           RECORDING MODE F
+           DATA RECORD FCLIENT2.
+       01  CLIENT2.
+          02 NUMERO2       PIC 9(6).
+          02               PIC X(44).
+      *---------------------------------------------
+       FD  FCLIENT
+           BLOCK CONTAINS 0
+           DATA RECORD FCLIENT
+           RECORDING MODE F.
+
+       01  CLIENT   PIC X(50).
+      *-----------------------------------------------------------
+       WORKING-STORAGE SECTION.
+       01 CPT1             PIC 9(2) VALUE 0.
+       01 CPT2             PIC 9(2) VALUE 0.
+      *-------------------------------------------------------------
+       01 CR-CLIENT1       PIC 99.
+       01 CR-CLIENT2       PIC 99.
+       01 CR-CLIENT        PIC 99.
+      *--------------------------------------------------------------
+      *01 F-CLIENT.
+      *   02 NUMERO-F      PIC 9(6).
+      *   02               PIC X(44).
+      *----------------------------------------------------------
+       PROCEDURE DIVISION.
+           PERFORM INIT
+           PERFORM  TRAIT1 UNTIL CR-CLIENT1 = 10 OR CR-CLIENT2 = 10
+           PERFORM TRAIT4
+           PERFORM FIN
+           STOP RUN.
+      *----------------------------------------------
+       INIT.
+           OPEN INPUT  FCLIENT1
+                       FCLIENT2
+           OPEN OUTPUT FCLIENT
+           READ FCLIENT1
+           READ FCLIENT2.
+      *----------------------------------------------
+       TRAIT1.
+           IF NUMERO1 < NUMERO2
+              PERFORM TRAIT2
+            ELSE
+              PERFORM TRAIT3
+           END-IF.
+      *---------------------------------------------
+       TRAIT2.
+           WRITE CLIENT  FROM  CLIENT1
+           READ FCLIENT1
+           DISPLAY 'CLIENT 1: ' CLIENT
+           ADD 1 TO CPT1.
+      *---------------------------------------------
+       TRAIT3.
+           WRITE CLIENT  FROM  CLIENT2
+           READ FCLIENT2
+           DISPLAY 'CLIENT 2 : '  CLIENT
+           ADD 1 TO CPT2.
+      *----------------------------------------------
+       TRAIT4.
+           IF CR-CLIENT1 EQUAL TO 10
+              PERFORM TRAIT3  UNTIL CR-CLIENT2 = 10
+              END-PERFORM
+           END-IF
+           IF CR-CLIENT2 EQUAL TO 10
+              PERFORM TRAIT2 UNTIL CR-CLIENT1 = 10
+
+              END-PERFORM
+           END-IF.
+      *----------------------------------------------
+       FIN.
+           CLOSE FCLIENT1
+                 FCLIENT2
+                 FCLIENT.

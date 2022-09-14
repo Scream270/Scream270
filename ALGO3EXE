@@ -1,0 +1,38 @@
+//API1M JOB 'SDJ FORMATION',MSGLEVEL=(1,1),MSGCLASS=H,CLASS=A,
+//   NOTIFY=&SYSUID,TIME=(,1) ,RESTART=STEP1
+//*---------------------------------------------------------------------
+//JOBLIB    DD DISP=SHR,DSN=API1.COBOL.LOAD
+//          DD DISP=SHR,DSN=CEE.SCEERUN
+//*----------SUPP APRËS CHAQUE SUB--------------------------------------
+//*DEL       EXEC PGM=IEFBR14
+//*F1     DD DSN=API1.ACTIF.CLIENTF,DISP=(OLD,DELETE,DELETE)
+//*-------CREATION FICHIER TEMPORAIRE AVEC TRI--------------------
+//TRI     EXEC PGM=SORT
+//SYSOUT  DD SYSOUT=*
+//SORTIN  DD DSN=API1.COB.FALG3C1A,DISP=SHR
+//SORTOUT DD DSN=&&FILE1,DISP=(NEW,PASS)
+//SYSIN   DD *
+             SORT FIELDS=(1,6,CH,A)
+//*-------CREATION FICHIER TEMPORAIRE AVEC TRI--------------------
+//TRI2    EXEC PGM=SORT
+//SYSOUT  DD SYSOUT=*
+//SORTIN  DD DSN=API1.COB.FALG3C1B,DISP=SHR
+//SORTOUT DD DSN=&&FILE2,DISP=(NEW,PASS)
+//SYSIN   DD *
+             SORT FIELDS=(1,6,CH,A)
+//*----------------------------------------------------
+//STEP1   EXEC PGM=ALGO3
+//SYSOUT  DD SYSOUT=*
+//*----------------------------------------------------------------
+//FCLIENT1 DD DSN=&&FILE1,DISP=(OLD,DELETE,DELETE)
+//FCLIENT2 DD DSN=&&FILE2,DISP=(OLD,DELETE,DELETE)
+//*-------------FICHIER DE SORTIE CLIENT FINAL-----------------------
+//*FCLIENT DD DSN=API1.ACTIF.CLIENTF,DISP=(NEW,CATLG,DELETE),
+//*           DCB=(LRECL=50,BLKSIZE=23200,RECFM=FB),
+//*            SPACE=(TRK,(2,1)),UNIT=SYSDA
+//*
+//FCLIENT    DD SYSOUT=*
+//*          DCB=(LRECL=50,BLKSIZE=23200,RECFM=FB),
+//*           SPACE=(TRK,(2,1)),UNIT=SYSDA
+//*
+//SYSPRINT   DD SYSOUT=*
